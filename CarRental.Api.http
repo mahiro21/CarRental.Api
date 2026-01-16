@@ -1,0 +1,39 @@
+@host = http://localhost:5275
+
+### Get all cars
+GET {{host}}/api/coches
+Accept: application/json
+
+###
+
+### Get a specific car
+GET {{host}}/api/coches/1
+Accept: application/json
+
+###
+
+### Create a new car
+POST {{host}}/api/coches
+Accept: application/json
+
+{
+    "marca":"BMW",
+    "model":"M3",
+    "price":"50",
+    "AnyoFabricacion":"2022"
+}
+
+###
+
+### Create a new car older than 5 years(result KO)
+POST {{host}}/api/coches/1
+Accept: application/json
+
+{
+    "marca":"BMW",
+    "model":"M3",
+    "price":"50",
+    "AnyoFabricacion":"2018"
+}
+
+###
