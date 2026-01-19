@@ -270,3 +270,4 @@ E:\DEV\CambaCodeLabs\CarRentalApi1\CarRental.Api\obj\Debug\net10.0\refint\CarRen
 E:\DEV\CambaCodeLabs\CarRentalApi1\CarRental.Api\obj\Debug\net10.0\CarRental.Api.pdb
 E:\DEV\CambaCodeLabs\CarRentalApi1\CarRental.Api\obj\Debug\net10.0\CarRental.Api.genruntimeconfig.cache
 E:\DEV\CambaCodeLabs\CarRentalApi1\CarRental.Api\obj\Debug\net10.0\ref\CarRental.Api.dll
+E:\DEV\CambaCodeLabs\CarRentalApi1\CarRental.Api\obj\Debug\net10.0\CarRental.Api.sourcelink.json

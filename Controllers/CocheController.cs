@@ -3,11 +3,12 @@ using CarRental.Api.Data;
 using CarRental.Api.Dto;
 using CarRental.Api.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CarRental.Api.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class CocheController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -16,16 +17,12 @@ namespace CarRental.Api.Controllers
             _context = context;
         }
 
-        [HttpPost]
-        public async Task<ActionResult<CocheDto>> createCoche(CocheDto cocheDto)
-        {
-            isValidYear(cocheDto.AnyoFabricacion);
-            var coche = ToEntity(cocheDto);
-            _context.Coches.Add(coche);
-            await _context.SaveChangesAsync();
 
-            cocheDto.Id = coche.Id;
-            return CreatedAtAction(nameof(GetCoche), new { id = coche.Id }, cocheDto);
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<CocheDto>>> GetAllCoches()
+        {
+            var coches = await _context.Coches.ToListAsync();
+            return coches.Select(ToDto).ToList();
         }
 
         [HttpGet("{id}")]
@@ -35,16 +32,24 @@ namespace CarRental.Api.Controllers
             return coche is null ? NotFound() : Ok(coche);
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<CocheDto>>> GetAllCoches()
+
+        [HttpPost]
+        public async Task<ActionResult<CocheDto>> createCoche(CocheDto cocheDto)
         {
-            var coches = _context.Coches.Select(c => ToDto(c)).ToList();
-            return Ok(coches);
+            isValidYear(cocheDto.AnyoFabricacion);
+
+            var coche = ToEntity(cocheDto);
+            _context.Coches.Add(coche);
+            await _context.SaveChangesAsync();
+
+            cocheDto.Id = coche.Id;
+            return CreatedAtAction(nameof(GetCoche), new { id = coche.Id }, cocheDto);
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateCoche(CocheDto cocheDto)
         {
+            isValidYear(cocheDto.AnyoFabricacion);
 
             var coche = await _context.Coches.FindAsync(cocheDto.Id);
             if (coche is null)
@@ -52,9 +57,7 @@ namespace CarRental.Api.Controllers
                 return NotFound();
             }
 
-            isValidYear(cocheDto.AnyoFabricacion);
-
-
+            // TODO: Revisar comportamiento del mapeo
             coche.Marca = cocheDto.Marca;
             coche.Modelo = cocheDto.Modelo;
             coche.Precio = cocheDto.Precio;
@@ -79,10 +82,10 @@ namespace CarRental.Api.Controllers
         }
 
         // Servicios a desplazar a la clase de Service
-        private async Task<object> GetCoche(int id)
+        private async Task<CocheDto?> GetCoche(int id)
         {
             var coche = await _context.Coches.FindAsync(id);
-            return coche is null ? NotFound() : ToDto(coche);
+            return coche is null ? null : ToDto(coche);
         }
 
         private Coche ToEntity(CocheDto cocheDto) => new Coche
@@ -104,10 +107,11 @@ namespace CarRental.Api.Controllers
 
         private void isValidYear(int anyoFabricacion)
         {
-            if (anyoFabricacion >= DateTime.Now.Year - 5)
+            if (anyoFabricacion < DateTime.Now.Year - 5)
             {
-                BadRequest("El coche no puede tener na antiguedad mayor a 5 años.");
+                throw new ArgumentException("El coche no puede tener na antiguedad mayor a 5 años.");
             }
+
 
         }
     }
