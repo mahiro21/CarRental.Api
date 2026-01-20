@@ -28,8 +28,8 @@ namespace CarRental.Api.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<CocheDto>> GetCocheById(int id)
         {
-            var coche = await GetCoche(id);
-            return coche is null ? NotFound() : Ok(coche);
+            var coche = await _context.Coches.FindAsync(id);
+            return coche is null ? NotFound() : ToDto(coche);
         }
 
 
@@ -43,21 +43,21 @@ namespace CarRental.Api.Controllers
             await _context.SaveChangesAsync();
 
             cocheDto.Id = coche.Id;
-            return CreatedAtAction(nameof(GetCoche), new { id = coche.Id }, cocheDto);
+            return CreatedAtAction(nameof(GetCocheById), new { id = coche.Id }, cocheDto);
         }
 
+        // [HttpPut("{id}")]
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateCoche(CocheDto cocheDto)
+        public async Task<ActionResult> UpdateCoche(int id, CocheDto cocheDto)
         {
-            isValidYear(cocheDto.AnyoFabricacion);
 
-            var coche = await _context.Coches.FindAsync(cocheDto.Id);
+            var coche = await _context.Coches.FindAsync(id);
             if (coche is null)
             {
                 return NotFound();
             }
+            isValidYear(cocheDto.AnyoFabricacion);
 
-            // TODO: Revisar comportamiento del mapeo
             coche.Marca = cocheDto.Marca;
             coche.Modelo = cocheDto.Modelo;
             coche.Precio = cocheDto.Precio;
@@ -82,10 +82,10 @@ namespace CarRental.Api.Controllers
         }
 
         // Servicios a desplazar a la clase de Service
-        private async Task<CocheDto?> GetCoche(int id)
+        private async Task<ActionResult<CocheDto>>? GetCoche(int id)
         {
             var coche = await _context.Coches.FindAsync(id);
-            return coche is null ? null : ToDto(coche);
+            return coche is null ? null : Ok(ToDto(coche));
         }
 
         private Coche ToEntity(CocheDto cocheDto) => new Coche
@@ -98,6 +98,7 @@ namespace CarRental.Api.Controllers
 
         private CocheDto ToDto(Coche coche) => new CocheDto
         {
+            Id = coche.Id,
             Marca = coche.Marca,
             Modelo = coche.Modelo,
             Precio = coche.Precio,

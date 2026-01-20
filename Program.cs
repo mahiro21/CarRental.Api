@@ -1,3 +1,4 @@
+using CarRental.Api;
 using CarRental.Api.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,7 +19,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 });
 
 var app = builder.Build();
-
+app.Initialize();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

@@ -1,40 +1,58 @@
-@host = http://localhost:5275
+@hostname = http://localhost
+@port = 5275
+@host = {{hostname}}:{{port}}
+
+## Coches API
 
 
 ### Get all cars
 GET {{host}}/api/coche
 Accept: application/json
 
+
 ### Get a specific car
-GET {{host}}/api/coche/1
+GET {{host}}/api/coche/6
 Accept: application/json
+
 
 ### Create a new car
 POST {{host}}/api/coche
 Content-Type: application/json
 
 {
-  "marca": "Ford",
-  "modelo": "Fiesta",
-  "precio": 30,
+  "marca": "Suzuki",
+  "modelo": "SX Cross",
+  "precio": 40,
+  "anyoFabricacion": 2024
+}
+
+
+### Update a car
+PUT {{host}}/api/coche/6
+Content-Type: application/json
+
+{
+  "marca": "BMW",
+  "modelo": "M3",
+  "precio": 55,
   "anyoFabricacion": 2023
 }
 
 
-###
+### Delete a car
+DELETE {{host}}/api/coche/7
 
 
-### Create a new car older than 5 years(result KO)
-POST {{host}}/api/coche
+## Alquieleres API
+
+
+### Create a new rental
+POST {{host}}/api/alquiler
 Content-Type: application/json
 
 {
-    "id":2,  
-    "marca":"BMW",
-    "model":"M3",
-    "price":"50",
-    "AnyoFabricacion":"2018"
+  "cocheId": 6,
+  "usuarioId": 1,
+  "fechaInicio": "2026-07-01T10:00:00",
+  "fechaFin": "2026-07-05T10:00:00"
 }
-
-
-###
